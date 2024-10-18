@@ -1,6 +1,5 @@
 import {
   Component,
-  signal,
   resource,
   computed,
   linkedSignal,
@@ -17,12 +16,13 @@ import { getSpecificPokemon } from './services/specific-pokemon';
   template: `
     @defer (when isGameReady() && !pokeApi.isLoading()) {
       <p>What Pokemon has the ID of {{ currentId() }}?</p>
-      <select [(ngModel)]="guess">
+      <select [disabled]="guess() !== ''" [(ngModel)]="guess">
         <option value="">Select a Pokemon...</option>
         @for (pokemon of allPokemonApi.value()!.results; track pokemon.name) {
           <option value="{{ pokemon.url }}">{{ pokemon.name }}</option>
         }
       </select>
+
       @if (guess() !== '') {
         <p>Your guess is {{ userReadableGuess()!.name }}? Well...</p>
         @if (isGuessCorrect()) {
@@ -30,6 +30,7 @@ import { getSpecificPokemon } from './services/specific-pokemon';
         } @else {
           <p>Nope! It's {{ pokeApi.value()!.name }}</p>
         }
+        <button (click)="restart()">Restart</button>
       }
     } @placeholder {
       <p>Loading...</p>
@@ -47,21 +48,34 @@ export class AppComponent {
 
   isGuessCorrect = computed(() => {
     if (!this.userReadableGuess()) return false;
-    return this.userReadableGuess()!.url.endsWith(String(this.currentId()!));
+    const url = this.userReadableGuess()!.url;
+    const guessId = Number(url.split('/').filter(Boolean).pop());
+    return guessId === this.currentId();
   });
 
   allPokemonApi = resource({
-    loader: () => {
-      return getAllPokemon();
+    loader: async () => {
+      const allPokemon = await getAllPokemon();
+      allPokemon.results.sort((a, b) => a.name.localeCompare(b.name));
+      return allPokemon;
     },
   });
+
+  getRandomId() {
+    return Math.floor(Math.random() * this.allPokemonApi.value()!.count);
+  }
 
   currentId = linkedSignal(() => {
     if (this.allPokemonApi.isLoading()) {
       return null;
     }
-    return Math.floor(Math.random() * this.allPokemonApi.value()!.count);
+    return this.getRandomId();
   });
+
+  restart() {
+    this.guess.set('');
+    this.currentId.set(this.getRandomId());
+  }
 
   isGameReady = computed(
     () => !this.allPokemonApi.isLoading() && this.currentId() !== null,
