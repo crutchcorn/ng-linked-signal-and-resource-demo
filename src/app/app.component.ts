@@ -3,7 +3,7 @@ import {
   resource,
   computed,
   linkedSignal,
-  model,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { getAllPokemon } from './services/all-pokemon';
@@ -38,7 +38,7 @@ import { getSpecificPokemon } from './services/specific-pokemon';
   `,
 })
 export class AppComponent {
-  guess = model('');
+  guess = signal('');
 
   userReadableGuess = computed(() => {
     return this.allPokemonApi
@@ -77,9 +77,7 @@ export class AppComponent {
     this.currentId.set(this.getRandomId());
   }
 
-  isGameReady = computed(
-    () => !this.allPokemonApi.isLoading() && this.currentId() !== null,
-  );
+  isGameReady = computed(() => !this.allPokemonApi.isLoading() && this.currentId() !== null);
 
   pokeApi = resource({
     request: () => ({
