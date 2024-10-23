@@ -10,7 +10,3 @@ This is a demo of two upcoming features in Angular:
 As well as the ability to be Zoneless in Angular.
 
 This demo is a simple guess-n-check game of Pokemon. The game will randomly select an ID of a Pokemon and the user will have to guess the name of the Pokemon.
-
-# Installing the demo
-
-Currently, you need to clone the Angular repo and build it locally to use these features. Then, simply run `npm link @angular/core` to reference the new build in this project.
