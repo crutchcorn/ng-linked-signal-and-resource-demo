@@ -1,10 +1,10 @@
 {
-  "name": "ng-19-demo",
+  "name": "ng-linked-signal-and-resource-demo",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href=/ng-19-demo/",
+    "build": "ng build --base-href=/ng-linked-signal-and-resource-demo/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
